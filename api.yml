@@ -1,0 +1,249 @@
+#Test with: http://editor.swagger.io/
+
+swagger: '2.0'
+info:
+  version: 1.0.0
+  title: Microservice for Images
+  description: Ruby on Rails + PostgreSQL
+  license:
+    name: Software Architecture, 2019-I
+host: 192.168.99.103:3000
+basePath: /
+schemes:
+  - http
+consumes:
+  - application/json
+produces:
+  - application/json
+paths:
+  /images:
+    post:
+      summary: Create a new image
+      operationId: createImage
+      parameters:
+        - name: New Image
+          in: body
+          required: true
+          description: Image Object
+          schema:
+            $ref: '#/definitions/CreateImage'
+      responses:
+        '201':
+          description: Image has been created successfully
+        '400':
+          description: Wrong Data
+          schema:
+            $ref: '#/definitions/ErrorModel'
+        '500':
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/ErrorModel'
+    
+    get:
+      summary: Obtain all images
+      operationId: allImages
+      responses:
+        '200':
+          description: Images has been obtained successfully
+          schema:
+            $ref: '#/definitions/ImagesList'
+        '204':
+          description: No images
+          schema:
+            $ref: '#/definitions/WarningModel'
+        '500':
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/ErrorModel'
+            
+  /typeimages{imageabletype}:
+    get:
+      summary: Obtain an image by type
+      operationId: imageByType
+      parameters:
+        - name: imageabletype
+          in: path
+          description: Type of the desired image
+          required: true
+          type: integer
+      responses:
+        '200':
+          description: Images has been obtained successfully
+          schema:
+            $ref: '#/definitions/Image'
+        '204':
+          description: No images
+          schema:
+            $ref: '#/definitions/WarningModel'
+        '500':
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/ErrorModel'
+            
+  /ownerimages{imageableid}:
+    get:
+      summary: Obtain an image by owner ID
+      operationId: imageByOwner
+      parameters:
+        - name: imageableid
+          in: path
+          description: Owner's ID of the desired image
+          required: true
+          type: integer
+      responses:
+        '200':
+          description: Images has been obtained successfully
+          schema:
+            $ref: '#/definitions/Image'
+        '204':
+          description: No images
+          schema:
+            $ref: '#/definitions/WarningModel'
+        '500':
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/ErrorModel'
+  
+  /base64{id}:
+    get:
+      summary: Obtain an image (base64) by ID
+      operationId: getBase64
+      parameters:
+        - name: id
+          in: path
+          description: Id of the image to obtain
+          required: true
+          type: integer
+      responses:
+        '200':
+          description: Image (Base64) has been obtained successfully
+          schema:
+            $ref: '#/definitions/ImageBase64'
+        '404':
+          description: Image not found
+          schema:
+            $ref: '#/definitions/ErrorModel'
+        '500':
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/ErrorModel'
+  
+  /images{id}:
+    get:
+      summary: Obtain an image by ID
+      operationId: getImage
+      parameters:
+        - name: id
+          in: path
+          description: Id of the image to obtain
+          required: true
+          type: integer
+      responses:
+        '200':
+          description: Image has been obtained successfully
+          schema:
+            $ref: '#/definitions/Image'
+        '404':
+          description: Image not found
+          schema:
+            $ref: '#/definitions/ErrorModel'
+        '500':
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/ErrorModel'
+  
+    delete:
+      summary: Delete an image
+      operationId: deleteImage
+      parameters:
+        - name: id
+          in: path
+          description: Id of the image to delete
+          required: true
+          type: integer
+      responses:
+        '200':
+          description: Image has been deleted successfully
+          schema:
+            $ref: '#/definitions/Image'
+        '404':
+          description: Image not found
+          schema:
+            $ref: '#/definitions/ErrorModel'
+        '500':
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/ErrorModel'
+    
+definitions:
+  # Create Images
+  CreateImage:
+    type: object
+    properties:
+      content:
+        type: string
+      imageableid:
+        type: integer
+      imageabletype:
+        type: string
+
+  # Images
+  Image:
+    type: object
+    properties:
+      id:
+        type: integer
+      content:
+        type: string
+      imageableid:
+        type: integer
+      imageabletype:
+        type: string
+        
+  # Base64 Images
+  ImageBase64:
+    type: object
+    properties:
+      id:
+        type: integer
+      imageableid:
+        type: integer
+      imageabletype:
+        type: string
+      base64:
+        type: string
+        
+  # List of images
+  ImagesList:
+    type: object
+    required:
+      - content
+      - message
+    properties:
+      content:
+        type: array
+        items:
+          $ref: '#/definitions/Image'
+      message:
+        type: string
+
+# Errors
+  ErrorModel:
+    type: object
+    required:
+      - error
+    properties:
+      error:
+        type: string
+        
+# Warning
+  WarningModel:
+    type: object
+    required:
+      - content
+      - message
+    properties:
+      content:
+        type: object
+      message:
+        type: string
