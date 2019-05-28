@@ -10,8 +10,11 @@ class ImageController < ApplicationController
     # Creates a new image
     def create
         image = Image.new(params_image) # Create a new image with the entered params
+        image.base64 = "data:image/png;base64," + Base64.strict_encode64(File.read(image.content.path))
         
-            if image.save 
+            if image.save
+                image = Image.get_image_by_id(image.id)
+
                 response = { content: image, mesagge: "Image has been created successfully" } # Return the created image
 
                 render json: response, status: 201
@@ -41,7 +44,7 @@ class ImageController < ApplicationController
     # GET /typeimages/:imageabletype
     # Show all the images corresponding to the type
     def show_by_type
-        images = Image.get_all_type_images(params[:imagebaletype]) # Obtain all the images corresponding to the type from the model
+        images = Image.get_all_type_images(params[:imageabletype]) # Obtain all the images corresponding to the type from the model
 
         if images.length > 0 # If exist at least one image in DB
             response = { content: images, mesagge: "Images has been obtained successfully" } # Return all the images
@@ -57,7 +60,7 @@ class ImageController < ApplicationController
     # GET /ownerimages/:imageableid
     # Show all the images corresponding to the owner id
     def show_by_owner
-        images = Image.get_image_by_owner_id(params[:imagebaleid]) # Obtain all the images corresponding to the id from the model
+        images = Image.get_image_by_owner_id(params[:imageableid]) # Obtain all the images corresponding to the id from the model
 
         if images.length > 0 # If exist at least one image in DB
             response = { content: images, mesagge: "Images has been obtained successfully" } # Return all the images
@@ -70,6 +73,22 @@ class ImageController < ApplicationController
         end
     end
 
+    # GET /typeownerimages/:imageabletype/:imageableid
+    # Show all the images corresponding to the type and the owner id
+    def show_by_type_and_owner
+        images = Image.get_image_by_type_and_owner(params[:imageabletype], params[:imageableid]) # Obtain all the images corresponding to the type and the owner id from the model
+
+        if images.length > 0 # If exist at least one image in DB
+            response = { content: images, mesagge: "Images has been obtained successfully" } # Return all the images
+
+            render json: response, status: 200
+        else # If not exist data
+            response = { content: nil, message: "No images corresponding to the type and id owner" }
+
+            render json: response, status: 204 # Return 'no content' and nil
+        end
+    end
+
     # GET /images/:id
     # Show the image corresponding to the id
     def show_by_id
@@ -77,24 +96,6 @@ class ImageController < ApplicationController
 
         if image != nil # If exist the image in DB
             response = { content: image, mesagge: "Image has been obtained successfully" } # Return the corresponding image
-
-            render json: response, status: 200
-        else # If not exist data
-            response = { error: "Image not found" }
-
-            render json: response, status: 404 # Return 'not found'
-        end
-    end
-
-    # GET /base64/:id
-    # Show the image (Base64) corresponding to the id
-    def show_base64
-        image = Image.get_image_by_id(params[:id]) # Obtain the image corresponding to the id
-
-        if image != nil # If exist the image in DB
-            response = { id: image.id, imageableid: image.imageableid, imageabletype: image.imageabletype,
-                base64: "data:image/png;base64," + Base64.strict_encode64(File.read(image.content.path)),
-                mesagge: "Image (Base64) has been obtained successfully" } # Return the corresponding image
 
             render json: response, status: 200
         else # If not exist data
