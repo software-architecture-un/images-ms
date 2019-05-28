@@ -15,7 +15,7 @@ class ImageController < ApplicationController
             if image.save
                 image = Image.get_image_by_id(image.id)
 
-                response = { content: image, mesagge: "Image has been created successfully" } # Return the created image
+                response = { content: image, message: "Image has been created successfully" } # Return the created image
 
                 render json: response, status: 201
             else
@@ -31,7 +31,7 @@ class ImageController < ApplicationController
         images = Image.get_all_images # Obtain all the images from the model
 
         if images.length > 0 # If exist at least one image in DB
-            response = { content: images, mesagge: "Images has been obtained successfully" } # Return all the images
+            response = { content: images, message: "Images has been obtained successfully" } # Return all the images
 
             render json: response, status: 200
         else # If not exist data
@@ -47,7 +47,7 @@ class ImageController < ApplicationController
         images = Image.get_all_type_images(params[:imageabletype]) # Obtain all the images corresponding to the type from the model
 
         if images.length > 0 # If exist at least one image in DB
-            response = { content: images, mesagge: "Images has been obtained successfully" } # Return all the images
+            response = { content: images, message: "Images has been obtained successfully" } # Return all the images
 
             render json: response, status: 200
         else # If not exist data
@@ -63,7 +63,7 @@ class ImageController < ApplicationController
         images = Image.get_image_by_owner_id(params[:imageableid]) # Obtain all the images corresponding to the id from the model
 
         if images.length > 0 # If exist at least one image in DB
-            response = { content: images, mesagge: "Images has been obtained successfully" } # Return all the images
+            response = { content: images, message: "Images has been obtained successfully" } # Return all the images
 
             render json: response, status: 200
         else # If not exist data
@@ -79,7 +79,7 @@ class ImageController < ApplicationController
         images = Image.get_image_by_type_and_owner(params[:imageabletype], params[:imageableid]) # Obtain all the images corresponding to the type and the owner id from the model
 
         if images.length > 0 # If exist at least one image in DB
-            response = { content: images, mesagge: "Images has been obtained successfully" } # Return all the images
+            response = { content: images, message: "Images has been obtained successfully" } # Return all the images
 
             render json: response, status: 200
         else # If not exist data
@@ -95,7 +95,7 @@ class ImageController < ApplicationController
         image = Image.get_image_by_id(params[:id]) # Obtain the image corresponding to the id
 
         if image != nil # If exist the image in DB
-            response = { content: image, mesagge: "Image has been obtained successfully" } # Return the corresponding image
+            response = { content: image, message: "Image has been obtained successfully" } # Return the corresponding image
 
             render json: response, status: 200
         else # If not exist data
@@ -111,7 +111,7 @@ class ImageController < ApplicationController
         image = Image.delete_image(params[:id]) # Delete an existing image
 
         if image != nil # If the image was deleted successfully
-            response = { content: image, mesagge: "Image has been deleted successfully" } # Return the corresponding image
+            response = { content: image, message: "Image has been deleted successfully" } # Return the corresponding image
 
             render json: response, status: 200
         else # If the image was not destroyed
